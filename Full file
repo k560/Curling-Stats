@@ -1,0 +1,252 @@
+
+#save links to wd under the appropriate names
+# https://www.curling.ca/scoreboard/#!/competitions/4960/reports/scoring_analysis_by_hammer as CanadianMixed
+# https://www.curling.ca/scoreboard/#!/competitions/4505/reports/scoring_analysis_by_hammer as U18Womens
+# https://www.curling.ca/scoreboard/#!/competitions/4495/reports/scoring_analysis_by_hammer as U18Mens
+# https://www.curling.ca/scoreboard/#!/competitions/4458/reports/scoring_analysis_by_hammer as TimHortonsBrier
+# https://www.curling.ca/scoreboard/#!/competitions/4433/reports/scoring_analysis_by_hammer as Scotties
+
+
+
+# Is the the proportion of times that multiple points are scored when 
+# having hammer greater than the porportion of times a team steals points without hammer?
+#null: the porportion is equal
+#alternative: the proportion is greater
+library(rvest)
+library(XML)
+#data wrangling
+reports_12_2019_page <- read_html(
+  "CanadianMixed.html")
+
+Table_12_2019 <- html_nodes(reports_12_2019_page, xpath = "//table")
+
+scraped_12_2019_reports <- as.data.frame(html_table(Table_12_2019,fill = TRUE))
+w <- paste(scraped_12_2019_reports[1,]," ",scraped_12_2019_reports[2, ])
+table2 <- `colnames<-`(scraped_12_2019_reports,w)
+
+table2 = table2[-c(1,2,4,5,6,8,9,10,12,13,14,16,17,18,20,21,22,24,25,26,
+                   28,29,30,32,33,34,36,37,38,40,41,42,44,45,46,48,49,50,52,53,54),]
+
+WithhammerCanadianMixed <- data.frame(table2[,1:11])
+WithouthammerCanadianMixed <- data.frame(table2[,13:23])
+
+
+
+reports_13_2019_page <- read_html(
+  "U18Womens.html")
+
+Table_13_2019 <- html_nodes(reports_13_2019_page, xpath = "//table")
+
+scraped_13_2019_reports <- as.data.frame(html_table(Table_13_2019,fill = TRUE))
+w <- paste(scraped_13_2019_reports[1,]," ",scraped_13_2019_reports[2, ])
+table3 <- `colnames<-`(scraped_13_2019_reports,w)
+
+table3 = table3[-c(1,2,4,5,6,8,9,10,12,13,14,16,17,18,20,21,22,24,25,26,
+                   28,29,30,32,33,34,36,37,38,40,41,42,44,45,46,48,49,50,52,53,54),]
+
+WithhammerU18Womens <- data.frame(table3[,1:11])
+WithouthammerU18Womens <- data.frame(table3[,13:23])
+
+
+reports_14_2019_page <- read_html(
+  "U18Mens.html")
+
+Table_14_2019 <- html_nodes(reports_14_2019_page, xpath = "//table")
+
+scraped_14_2019_reports <- as.data.frame(html_table(Table_14_2019,fill = TRUE))
+w <- paste(scraped_14_2019_reports[1,]," ",scraped_14_2019_reports[2, ])
+table4 <- `colnames<-`(scraped_14_2019_reports,w)
+
+table4 = table4[-c(1,2,4,5,6,8,9,10,12,13,14,16,17,18,20,21,22,24,25,26,28,
+                   29,30,32,33,34,36,37,38,40,41,42,44,45,46,48,49,50,52,53,54),]
+
+WithhammerU18Mens <- data.frame(table4[,1:11])
+WithouthammerU18Mens <- data.frame(table4[,13:23])
+
+
+reports_15_2019_page <- read_html(
+  "TimHortonsBrier.html")
+
+Table_15_2019 <- html_nodes(reports_15_2019_page, xpath = "//table")
+
+scraped_15_2019_reports <- as.data.frame(html_table(Table_15_2019,fill = TRUE))
+w <- paste(scraped_15_2019_reports[1,]," ",scraped_15_2019_reports[2, ])
+table5 <- `colnames<-`(scraped_15_2019_reports,w)
+
+table5 = table5[-c(1,2,4,5,6,8,9,10,12,13,14,16,17,18,20,21,22,24,25,26,28,
+                   29,30,32,33,34,36,37,38,40,41,42,44,45,46,48,49,50,52,53,54,56,57,58,60,61,62),]
+
+WithhammerTimHortonsBrier <- data.frame(table5[,1:11])
+WithouthammerTimHortonsBrier <- data.frame(table5[,13:23])
+
+reports_16_2019_page <- read_html(
+  "Scotties.html")
+
+Table_16_2019 <- html_nodes(reports_16_2019_page, xpath = "//table")
+
+scraped_16_2019_reports <- as.data.frame(html_table(Table_16_2019,fill = TRUE))
+w <- paste(scraped_16_2019_reports[1,]," ",scraped_16_2019_reports[2, ])
+table6 <- `colnames<-`(scraped_16_2019_reports,w)
+
+table6 = table6[-c(1,2,4,5,6,8,9,10,12,13,14,16,17,18,20,21,22,24,25,26,28,
+                   29,30,32,33,34,36,37,38,40,41,42,44,45,46,48,49,50,52,53,54,56,57,58,60,61,62),]
+
+WithhammerScotties <- data.frame(table6[,1:11])
+WithouthammerScotties <- data.frame(table6[,13:23])
+
+#first hypothesis test
+
+ScottiestotalendsWH <- c(as.numeric(WithhammerScotties$With.Hammer...Ends))
+sum(ScottiestotalendsWH)
+ScottiestotalmultiendsWH <- c(as.numeric(WithhammerScotties$Multi.Points.For....))
+sum(ScottiestotalmultiendsWH)
+scottiesratioWH <- ((sum(ScottiestotalmultiendsWH)/sum(ScottiestotalendsWH)))
+
+ScottiestotalendsWOH <- c(as.numeric(WithouthammerScotties$Without.Hammer...Ends))
+sum(ScottiestotalendsWOH)
+ScottiestotalstolenendsWOH <- c(as.numeric(WithouthammerScotties$Stolen.Ends.For....))
+sum(ScottiestotalstolenendsWOH)
+scottiesratioWOH <- ((sum(ScottiestotalstolenendsWOH)/sum(ScottiestotalendsWOH)))
+prop.test(c(sum(ScottiestotalmultiendsWH),sum(ScottiestotalstolenendsWOH)),
+          c(sum(ScottiestotalendsWH),sum(ScottiestotalendsWOH)),alternative = 'greater')
+
+
+
+TimHortonsBriertotalendsWH <- c(as.numeric(WithhammerTimHortonsBrier$With.Hammer...Ends))
+sum(TimHortonsBriertotalendsWH)
+TimHortonsBriertotalmultiendsWH <- c(as.numeric(WithhammerTimHortonsBrier$Multi.Points.For....))
+sum(TimHortonsBriertotalmultiendsWH)
+TimHortonsBrierratioWH <- ((sum(TimHortonsBriertotalmultiendsWH)/sum(TimHortonsBriertotalendsWH)))
+
+TimHortonsBriertotalendsWOH <- c(as.numeric(WithouthammerTimHortonsBrier$Without.Hammer...Ends))
+sum(TimHortonsBriertotalendsWOH)
+TimHortonsBriertotalstolenendsWOH <- c(as.numeric(WithouthammerTimHortonsBrier$Stolen.Ends.For....))
+sum(TimHortonsBriertotalstolenendsWOH)
+TimHortonsBrierratioWOH <- ((sum(TimHortonsBriertotalstolenendsWOH)/sum(TimHortonsBriertotalendsWOH)))
+prop.test(c(sum(TimHortonsBriertotalmultiendsWH),sum(TimHortonsBriertotalstolenendsWOH)),
+          c(sum(TimHortonsBriertotalendsWH),sum(TimHortonsBriertotalendsWOH)),alternative = 'greater')
+
+
+CanadianMixedtotalendsWH <- c(as.numeric(WithhammerCanadianMixed$With.Hammer...Ends))
+sum(CanadianMixedtotalendsWH)
+CanadianMixedtotalmultiendsWH <- c(as.numeric(WithhammerCanadianMixed$Multi.Points.For....))
+sum(CanadianMixedtotalmultiendsWH)
+CanadianMixedratioWH <- ((sum(CanadianMixedtotalmultiendsWH)/sum(CanadianMixedtotalendsWH)))
+
+CanadianMixedtotalendsWOH <- c(as.numeric(WithouthammerCanadianMixed$Without.Hammer...Ends))
+sum(CanadianMixedtotalendsWOH)
+CanadianMixedtotalstolenendsWOH <- c(as.numeric(WithouthammerCanadianMixed$Stolen.Ends.For....))
+sum(CanadianMixedtotalstolenendsWOH)
+CanadianMixedratioWOH <- ((sum(CanadianMixedtotalstolenendsWOH)/sum(CanadianMixedtotalendsWOH)))
+prop.test(c(sum(CanadianMixedtotalmultiendsWH),sum(CanadianMixedtotalstolenendsWOH)),
+          c(sum(CanadianMixedtotalendsWH),sum(CanadianMixedtotalendsWOH)),alternative = 'greater')
+
+# younger events have less consistancy and more flukes
+
+U18WomenstotalendsWH <- c(as.numeric(WithhammerU18Womens$With.Hammer...Ends))
+sum(U18WomenstotalendsWH)
+U18WomenstotalmultiendsWH <- c(as.numeric(WithhammerU18Womens$Multi.Points.For....))
+sum(U18WomenstotalmultiendsWH)
+U18WomensratioWH <- ((sum(U18WomenstotalmultiendsWH)/sum(U18WomenstotalendsWH)))
+
+U18WomenstotalendsWOH <- c(as.numeric(WithouthammerU18Womens$Without.Hammer...Ends))
+sum(U18WomenstotalendsWOH)
+U18WomenstotalstolenendsWOH <- c(as.numeric(WithouthammerU18Womens$Stolen.Ends.For....))
+sum(U18WomenstotalstolenendsWOH)
+U18WomensratioWOH <- ((sum(U18WomenstotalstolenendsWOH)/sum(U18WomenstotalendsWOH)))
+prop.test(c(sum(U18WomenstotalmultiendsWH),sum(U18WomenstotalstolenendsWOH)),
+          c(sum(U18WomenstotalendsWH),sum(U18WomenstotalendsWOH)),alternative = 'greater')
+
+
+U18MenstotalendsWH <- c(as.numeric(WithhammerU18Mens$With.Hammer...Ends))
+sum(U18MenstotalendsWH)
+U18MenstotalmultiendsWH <- c(as.numeric(WithhammerU18Mens$Multi.Points.For....))
+sum(U18MenstotalmultiendsWH)
+U18MensratioWH <- ((sum(U18MenstotalmultiendsWH)/sum(U18MenstotalendsWH)))
+
+U18MenstotalendsWOH <- c(as.numeric(WithouthammerU18Mens$Without.Hammer...Ends))
+sum(U18MenstotalendsWOH)
+U18MenstotalstolenendsWOH <- c(as.numeric(WithouthammerU18Mens$Stolen.Ends.For....))
+sum(U18MenstotalstolenendsWOH)
+U18MensratioWOH <- ((sum(U18MenstotalstolenendsWOH)/sum(U18MenstotalendsWOH)))
+prop.test(c(sum(U18MenstotalmultiendsWH),sum(U18MenstotalstolenendsWOH)),
+          c(sum(U18MenstotalendsWH),sum(U18MenstotalendsWOH)),alternative = 'greater')
+
+#For all of these events, the proportion of times that multiple points are scored 
+#when having hammer is greater than the porportion of times a team steals points without hammer.
+
+#Is the average number of games played by a team greater than 5?
+#Null: Is the average number of games played by a team equal to 5?
+#Alternative : Is the average number of games played by a team greater than 5?
+SG <- as.numeric(WithhammerScotties$With.Hammer...Games)
+t.test(SG, alternative = "greater",mu = 5)
+
+THBG <- as.numeric(WithhammerTimHortonsBrier$With.Hammer...Games)
+t.test(THBG, alternative = "greater",mu = 5)
+
+CMG <- as.numeric(WithhammerCanadianMixed$With.Hammer...Games)
+t.test(CMG, alternative = "greater",mu = 5)
+
+U18WG <- as.numeric(WithhammerU18Womens$With.Hammer...Games)
+t.test(U18WG, alternative = "greater",mu = 5)
+
+U18MG <- as.numeric(WithhammerU18Mens$With.Hammer...Games)
+t.test(U18MG, alternative = "greater",mu = 5)
+
+#The mean number of games that a team playes in all of these events is greater than 5.
+
+
+#Are the number of games and the number of ends played related?
+#null : no relationship
+#alternative: relationship
+S_TE <- ScottiestotalendsWH + ScottiestotalendsWOH
+THB_TE <- TimHortonsBriertotalendsWH + TimHortonsBriertotalendsWOH
+CM_TE <- CanadianMixedtotalendsWH + CanadianMixedtotalendsWOH
+U18W_TE <- U18WomenstotalendsWH + U18WomenstotalendsWOH
+U18M_TE <- U18MenstotalendsWH + U18MensratioWOH
+
+chisq.test(SG,S_TE)
+#reject - related
+#therefore the number of games played is related to the number of ends for the scotties.
+chisq.test(THBG,THB_TE)
+#fTR (fail to reject null)
+chisq.test(CMG,CM_TE)
+#ftR
+chisq.test(U18WG,U18W_TE)
+#FTR
+chisq.test(U18MG,U18M_TE)
+#FTR
+
+
+#hypothesis:women have a greater proportion of stolen ends than men 
+#because men play a more aggressive game.
+#null: the proportions are the same
+#alternative: the womens porportion is greater
+
+ScottiestotalstolenendsWH <- (as.numeric(WithhammerScotties$Stolen.Ends.Against....))
+TimHortonsBrierstolenendsWH <- (as.numeric(WithhammerTimHortonsBrier$Stolen.Ends.Against....))
+
+Scottiestotalstolenends <- (sum(ScottiestotalstolenendsWH)+sum(ScottiestotalstolenendsWOH))
+TimHortonsBriertotalstolenends <- ((sum(TimHortonsBrierstolenendsWH)) + 
+                                     (sum(TimHortonsBriertotalstolenendsWOH)))
+Scottiestotalends <- ((sum(ScottiestotalendsWH)) + (sum(ScottiestotalendsWOH)))
+TimHortonsBriertotalends <- ((sum(TimHortonsBriertotalendsWH)) + (sum(TimHortonsBriertotalendsWOH)))
+prop.test(c(Scottiestotalstolenends,TimHortonsBriertotalstolenends),
+          c(Scottiestotalends,TimHortonsBriertotalends),alternative = 'greater')
+
+#conclusion: women statistically steal more often than men
+#reject the null hypothisis
+
+U18WomenstotalstolenendsWH <- (as.numeric(WithhammerU18Womens$Stolen.Ends.Against....))
+U18MensstolenendsWH <- (as.numeric(WithhammerU18Mens$Stolen.Ends.Against....))
+
+U18Womenstotalstolenends <- (sum(U18WomenstotalstolenendsWH)+sum(U18WomenstotalstolenendsWOH))
+U18Menstotalstolenends <- ((sum(U18MensstolenendsWH)) + (sum(U18MenstotalstolenendsWOH)))
+U18Womenstotalends <- ((sum(U18WomenstotalendsWH)) + (sum(U18WomenstotalendsWOH)))
+U18Menstotalends <- ((sum(U18MenstotalendsWH)) + (sum(U18MenstotalendsWOH)))
+prop.test(c(U18Womenstotalstolenends,U18Menstotalstolenends),
+          c(U18Womenstotalends,U18Menstotalends),alternative = 'greater')
+# conclusion # younger events have less consistancy and more flukes
+#fail to reject the null
+
+
